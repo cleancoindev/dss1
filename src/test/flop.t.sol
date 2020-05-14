@@ -53,7 +53,7 @@ contract Vatish is DSToken('') {
     function hope(address usr) public {
          super.approve(usr);
     }
-    function dai(address usr) public view returns (uint) {
+    function tao(address usr) public view returns (uint) {
          return super.balanceOf(usr);
     }
 }
@@ -94,14 +94,14 @@ contract FlopTest is DSTest {
         vat.move(address(this), bob, 200 ether);
     }
     function test_kick() public {
-        assertEq(vat.dai(address(this)), 600 ether);
+        assertEq(vat.tao(address(this)), 600 ether);
         assertEq(gem.balanceOf(address(this)),   0 ether);
         flop.kick({ lot: 200 ether   // or whatever high starting value
                   , gal: gal
                   , bid: 0
                   });
         // no value transferred
-        assertEq(vat.dai(address(this)), 600 ether);
+        assertEq(vat.tao(address(this)), 600 ether);
         assertEq(gem.balanceOf(address(this)),   0 ether);
     }
     function test_dent() public {
@@ -112,17 +112,17 @@ contract FlopTest is DSTest {
 
         Guy(ali).dent(id, 100 ether, 10 ether);
         // bid taken from bidder
-        assertEq(vat.dai(ali), 190 ether);
+        assertEq(vat.tao(ali), 190 ether);
         // gal receives payment
-        assertEq(vat.dai(gal),  10 ether);
+        assertEq(vat.tao(gal),  10 ether);
 
         Guy(bob).dent(id, 80 ether, 10 ether);
         // bid taken from bidder
-        assertEq(vat.dai(bob), 190 ether);
+        assertEq(vat.tao(bob), 190 ether);
         // prev bidder refunded
-        assertEq(vat.dai(ali), 200 ether);
+        assertEq(vat.tao(ali), 200 ether);
         // gal receives no more
-        assertEq(vat.dai(gal), 10 ether);
+        assertEq(vat.tao(gal), 10 ether);
 
         hevm.warp(now + 5 weeks);
         assertEq(gem.totalSupply(),  0 ether);
@@ -166,7 +166,7 @@ contract FlopTest is DSTest {
         assertTrue(!Guy(ali).try_deal(id));
     }
     function test_yank() public {
-        // yanking the auction should refund the last bidder's dai, credit a
+        // yanking the auction should refund the last bidder's tao, credit a
         // corresponding amount of sin to the caller of cage, and delete the auction.
         // in practice, gal == (caller of cage) == (vow address)
         uint id = flop.kick({ lot: 200 ether   // or whatever high starting value
@@ -175,27 +175,27 @@ contract FlopTest is DSTest {
                             });
 
         // confrim initial state expectations
-        assertEq(vat.dai(ali), 200 ether);
-        assertEq(vat.dai(bob), 200 ether);
-        assertEq(vat.dai(gal), 0);
+        assertEq(vat.tao(ali), 200 ether);
+        assertEq(vat.tao(bob), 200 ether);
+        assertEq(vat.tao(gal), 0);
         assertEq(vat.sin(address(this)), 1000 ether);
 
         Guy(ali).dent(id, 100 ether, 10 ether);
         Guy(bob).dent(id, 80 ether, 10 ether);
 
         // confirm the proper state updates have occurred
-        assertEq(vat.dai(ali), 200 ether);  // ali's dai balance is unchanged
-        assertEq(vat.dai(bob), 190 ether);
-        assertEq(vat.dai(gal),  10 ether);
+        assertEq(vat.tao(ali), 200 ether);  // ali's tao balance is unchanged
+        assertEq(vat.tao(bob), 190 ether);
+        assertEq(vat.tao(gal),  10 ether);
         assertEq(vat.sin(address(this)), 1000 ether);
 
         flop.cage();
         flop.yank(id);
 
         // confirm final state
-        assertEq(vat.dai(ali), 200 ether);
-        assertEq(vat.dai(bob), 200 ether);  // bob's bid has been refunded
-        assertEq(vat.dai(gal), 10 ether);
+        assertEq(vat.tao(ali), 200 ether);
+        assertEq(vat.tao(bob), 200 ether);  // bob's bid has been refunded
+        assertEq(vat.tao(gal), 10 ether);
         assertEq(vat.sin(address(this)), 1010 ether);  // sin assigned to caller of cage()
         (uint256 _bid, uint256 _lot, address _guy, uint48 _tic, uint48 _end) = flop.bids(id);
         assertEq(_bid, 0);
@@ -206,7 +206,7 @@ contract FlopTest is DSTest {
     }
     function test_yank_no_bids() public {
         // with no bidder to refund, yanking the auction should simply create equal
-        // amounts of dai (credited to the gal) and sin (credited to the caller of cage)
+        // amounts of tao (credited to the gal) and sin (credited to the caller of cage)
         // in practice, gal == (caller of cage) == (vow address)
         uint id = flop.kick({ lot: 200 ether   // or whatever high starting value
                             , gal: gal
@@ -214,18 +214,18 @@ contract FlopTest is DSTest {
                             });
 
         // confrim initial state expectations
-        assertEq(vat.dai(ali), 200 ether);
-        assertEq(vat.dai(bob), 200 ether);
-        assertEq(vat.dai(gal), 0);
+        assertEq(vat.tao(ali), 200 ether);
+        assertEq(vat.tao(bob), 200 ether);
+        assertEq(vat.tao(gal), 0);
         assertEq(vat.sin(address(this)), 1000 ether);
 
         flop.cage();
         flop.yank(id);
 
         // confirm final state
-        assertEq(vat.dai(ali), 200 ether);
-        assertEq(vat.dai(bob), 200 ether);
-        assertEq(vat.dai(gal),  10 ether);
+        assertEq(vat.tao(ali), 200 ether);
+        assertEq(vat.tao(bob), 200 ether);
+        assertEq(vat.tao(gal),  10 ether);
         assertEq(vat.sin(address(this)), 1010 ether);  // sin assigned to caller of cage()
         (uint256 _bid, uint256 _lot, address _guy, uint48 _tic, uint48 _end) = flop.bids(id);
         assertEq(_bid, 0);
