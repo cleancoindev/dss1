@@ -1,7 +1,7 @@
-# Multi Collateral Dai
+# Multi Collateral TAO
 
 This repository contains the core smart contract code for Multi
-Collateral Dai. This is a high level description of the system, assuming
+Collateral TAO. This is a high level description of the system, assuming
 familiarity with the basic economic mechanics as described in the
 whitepaper.
 
@@ -31,7 +31,7 @@ whitepaper.
 
 ## Collateral, Adapters and Wrappers
 
-Collateral is the foundation of Dai and Dai creation is not possible
+Collateral is the foundation of TAO and Dai creation is not possible
 without it. There are many potential candidates for collateral, whether
 native ether, ERC20 tokens, other fungible token standards like ERC777,
 non-fungible tokens, or any number of other financial instruments.
