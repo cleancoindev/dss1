@@ -45,7 +45,7 @@ contract VatLike {
 
       - `ETHJoin`: For native Ether.
 
-      - `DaiJoin`: For connecting internal Dai balances to an external
+      - `TaoJoin`: For connecting internal Tao balances to an external
                    `DSToken` implementation.
 
     In practice, adapter implementations will be varied and specific to
@@ -134,25 +134,25 @@ contract ETHJoin is LibNote {
     }
 }
 
-contract DaiJoin is LibNote {
+contract TaoJoin is LibNote {
     // --- Auth ---
     mapping (address => uint) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }
     function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth {
-        require(wards[msg.sender] == 1, "DaiJoin/not-authorized");
+        require(wards[msg.sender] == 1, "TaoJoin/not-authorized");
         _;
     }
 
     VatLike public vat;
-    DSTokenLike public dai;
+    DSTokenLike public tao;
     uint    public live;  // Access Flag
 
-    constructor(address vat_, address dai_) public {
+    constructor(address vat_, address tao_) public {
         wards[msg.sender] = 1;
         live = 1;
         vat = VatLike(vat_);
-        dai = DSTokenLike(dai_);
+        tao = DSTokenLike(tao_);
     }
     function cage() external note auth {
         live = 0;
@@ -163,11 +163,11 @@ contract DaiJoin is LibNote {
     }
     function join(address usr, uint wad) external note {
         vat.move(address(this), usr, mul(ONE, wad));
-        dai.burn(msg.sender, wad);
+        tao.burn(msg.sender, wad);
     }
     function exit(address usr, uint wad) external note {
-        require(live == 1, "DaiJoin/not-live");
+        require(live == 1, "TaoJoin/not-live");
         vat.move(msg.sender, address(this), mul(ONE, wad));
-        dai.mint(usr, wad);
+        tao.mint(usr, wad);
     }
 }
