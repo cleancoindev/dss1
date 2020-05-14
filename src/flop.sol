@@ -28,11 +28,11 @@ contract GemLike {
 }
 
 /*
-   This thing creates gems on demand in return for dai.
+   This thing creates gems on demand in return for tao.
 
  - `lot` gems for sale
- - `bid` dai paid
- - `gal` receives dai income
+ - `bid` tao paid
+ - `gal` receives tao income
  - `ttl` single bid lifetime
  - `beg` minimum bid increase
  - `end` max auction duration
