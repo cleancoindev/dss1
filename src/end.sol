@@ -21,7 +21,7 @@ pragma solidity ^0.5.12;
 import "./lib.sol";
 
 contract VatLike {
-    function dai(address) external view returns (uint256);
+    function tao(address) external view returns (uint256);
     function ilks(bytes32 ilk) external returns (
         uint256 Art,
         uint256 rate,
@@ -98,12 +98,12 @@ contract Spotty {
        - set the cage price for each `ilk`, reading off the price feed
 
     We must process some system state before it is possible to calculate
-    the final dai / collateral price. In particular, we need to determine
+    the final tao / collateral price. In particular, we need to determine
 
       a. `gap`, the collateral shortfall per collateral type by
          considering under-collateralised CDPs.
 
-      b. `debt`, the outstanding dai supply after including system
+      b. `debt`, the outstanding tao supply after including system
          surplus / deficit
 
     We determine (a) by processing all under-collateralised CDPs with
@@ -114,9 +114,9 @@ contract Spotty {
        - any excess collateral remains
        - backing collateral taken
 
-    We determine (b) by processing ongoing dai generating processes,
+    We determine (b) by processing ongoing tao generating processes,
     i.e. auctions. We need to ensure that auctions will not generate any
-    further dai income. In the two-way auction model this occurs when
+    further tao income. In the two-way auction model this occurs when
     all auctions are in the reverse (`dent`) phase. There are two ways
     of ensuring this:
 
@@ -125,17 +125,17 @@ contract Spotty {
            cage administrator.
 
            This takes a fairly predictable time to occur but with altered
-           auction dynamics due to the now varying price of dai.
+           auction dynamics due to the now varying price of tao.
 
        ii) `skip`: cancel all ongoing auctions and seize the collateral.
 
            This allows for faster processing at the expense of more
-           processing calls. This option allows dai holders to retrieve
+           processing calls. This option allows tao holders to retrieve
            their collateral faster.
 
            `skip(ilk, id)`:
             - cancel individual flip auctions in the `tend` (forward) phase
-            - retrieves collateral and returns dai to bidder
+            - retrieves collateral and returns tao to bidder
             - `dent` (reverse) phase auctions can continue normally
 
     Option (i), `wait`, is sufficient for processing the system
@@ -156,7 +156,7 @@ contract Spotty {
     6. `thaw()`:
        - only callable after processing time period elapsed
        - assumption that all under-collateralised CDPs are processed
-       - fixes the total outstanding supply of dai
+       - fixes the total outstanding supply of tao
        - may also require extra CDP processing to cover vow surplus
 
     7. `flow(ilk)`:
@@ -164,21 +164,21 @@ contract Spotty {
         - adjusts the `fix` in the case of deficit / surplus
 
     At this point we have computed the final price for each collateral
-    type and dai holders can now turn their dai into collateral. Each
-    unit dai can claim a fixed basket of collateral.
+    type and tao holders can now turn their tao into collateral. Each
+    unit tao can claim a fixed basket of collateral.
 
-    Dai holders must first `pack` some dai into a `bag`. Once packed,
-    dai cannot be unpacked and is not transferrable. More dai can be
+    Tao holders must first `pack` some tao into a `bag`. Once packed,
+    tao cannot be unpacked and is not transferrable. More tao can be
     added to a bag later.
 
     8. `pack(wad)`:
-        - put some dai into a bag in preparation for `cash`
+        - put some tao into a bag in preparation for `cash`
 
     Finally, collateral can be obtained with `cash`. The bigger the bag,
     the more collateral can be released.
 
     9. `cash(ilk, wad)`:
-        - exchange some dai from your bag for gems from a specific ilk
+        - exchange some tao from your bag for gems from a specific ilk
         - the number of gems is limited by how big your bag is
 */
 
@@ -202,7 +202,7 @@ contract End is LibNote {
     uint256  public live;  // cage flag
     uint256  public when;  // time of cage
     uint256  public wait;  // processing cooldown length
-    uint256  public debt;  // total outstanding dai following processing [rad]
+    uint256  public debt;  // total outstanding tao following processing [rad]
 
     mapping (bytes32 => uint256) public tag;  // cage price           [ray]
     mapping (bytes32 => uint256) public gap;  // collateral shortfall [wad]
@@ -324,7 +324,7 @@ contract End is LibNote {
     function thaw() external note {
         require(live == 0, "End/still-live");
         require(debt == 0, "End/debt-not-zero");
-        require(vat.dai(address(vow)) == 0, "End/surplus-not-zero");
+        require(vat.tao(address(vow)) == 0, "End/surplus-not-zero");
         require(now >= add(when, wait), "End/wait-not-finished");
         debt = vat.debt();
     }
