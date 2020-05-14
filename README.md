@@ -31,13 +31,13 @@ whitepaper.
 
 ## Collateral, Adapters and Wrappers
 
-Collateral is the foundation of TAO and Dai creation is not possible
+Collateral is the foundation of TAO and Tao creation is not possible
 without it. There are many potential candidates for collateral, whether
 native ether, ERC20 tokens, other fungible token standards like ERC777,
 non-fungible tokens, or any number of other financial instruments.
 
 Token wrappers are one solution to the need to standardise collateral
-behaviour in Dai. Inconsistent decimals and transfer semantics are
+behaviour in Tao. Inconsistent decimals and transfer semantics are
 reasons for wrapping. For example, the WETH token is an ERC20 wrapper
 around native ether.
 
@@ -58,27 +58,27 @@ different requirements. For example, ETH collateral could have an
 adapter for native ether and *also* for WETH.
 
 
-## The Dai Token
+## The Tao Token
 
-The fundamental state of a Dai balance is given by the balance in the
+The fundamental state of a Tao balance is given by the balance in the
 core (`vat.dai`, sometimes referred to as `D`).
 
-Given this, there are a number of ways to implement the Dai that is used
+Given this, there are a number of ways to implement the Tao that is used
 outside of the system, with different trade offs.
 
-*Fundamentally, "Dai" is any token that is directly fungible with the
+*Fundamentally, "Tao" is any token that is directly fungible with the
 core.*
 
-In the Kovan deployment, "Dai" is represented by an ERC20 DSToken.
+In the Kovan deployment, "Tao" is represented by an ERC20 DSToken.
 After interacting with CDPs and auctions, users must `exit` from the
 system to gain a balance of this token, which can then be used in Oasis
 etc.
 
-It is possible to have multiple fungible Dai tokens, allowing for the
+It is possible to have multiple fungible Tao tokens, allowing for the
 adoption of new token standards. This needs careful consideration from a
 UX perspective, with the notion of a canonical token address becoming
 increasingly restrictive. In the future, cross-chain communication and
-scalable sidechains will likely lead to a proliferation of multiple Dai
+scalable sidechains will likely lead to a proliferation of multiple Tao
 tokens. Users of the core could `exit` into a Plasma sidechain, an
 Ethereum shard, or a different blockchain entirely via e.g. the Cosmos
 Hub.
@@ -86,12 +86,12 @@ Hub.
 
 ## Price Feeds
 
-Price feeds are a crucial part of the Dai system. The code here assumes
+Price feeds are a crucial part of the Tao system. The code here assumes
 that there are working price feeds and that their values are being
 pushed to the contracts.
 
 Specifically, the price that is required is the highest acceptable
-quantity of CDP Dai debt per unit of collateral.
+quantity of CDP Tao debt per unit of collateral.
 
 
 ## Liquidation and Auctions
@@ -118,7 +118,7 @@ In order to reduce the collateral intensity of large CDP liquidations,
 MKR dilution is delayed by a configurable period (e.g 1 week).
 
 Similarly, System Surplus is handled by an auction (`flap`), which sells
-off Dai surplus in return for the highest bidder in MKR.
+off Tao surplus in return for the highest bidder in MKR.
 
 
 ## Authentication
