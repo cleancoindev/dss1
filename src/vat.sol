@@ -1,4 +1,4 @@
-/// vat.sol -- Dai CDP database
+/// vat.sol -- Tao CDP database
 
 // Copyright (C) 2018 Rain <rainbreak@riseup.net>
 //
@@ -50,11 +50,11 @@ contract Vat {
     mapping (bytes32 => Ilk)                       public ilks;
     mapping (bytes32 => mapping (address => Urn )) public urns;
     mapping (bytes32 => mapping (address => uint)) public gem;  // [wad]
-    mapping (address => uint256)                   public dai;  // [rad]
+    mapping (address => uint256)                   public tao;  // [rad]
     mapping (address => uint256)                   public sin;  // [rad]
 
-    uint256 public debt;  // Total Dai Issued    [rad]
-    uint256 public vice;  // Total Unbacked Dai  [rad]
+    uint256 public debt;  // Total Tao Issued    [rad]
+    uint256 public vice;  // Total Unbacked Tao  [rad]
     uint256 public Line;  // Total Debt Ceiling  [rad]
     uint256 public live;  // Access Flag
 
@@ -150,8 +150,8 @@ contract Vat {
     }
     function move(address src, address dst, uint256 rad) external note {
         require(wish(src, msg.sender), "Vat/not-allowed");
-        dai[src] = sub(dai[src], rad);
-        dai[dst] = add(dai[dst], rad);
+        tao[src] = sub(tao[src], rad);
+        tao[dst] = add(tao[dst], rad);
     }
 
     function either(bool x, bool y) internal pure returns (bool z) {
@@ -195,7 +195,7 @@ contract Vat {
         require(either(urn.art == 0, tab >= ilk.dust), "Vat/dust");
 
         gem[i][v] = sub(gem[i][v], dink);
-        dai[w]    = add(dai[w],    dtab);
+        tao[w]    = add(tao[w],    dtab);
 
         urns[i][u] = urn;
         ilks[i]    = ilk;
@@ -245,13 +245,13 @@ contract Vat {
     function heal(uint rad) external note {
         address u = msg.sender;
         sin[u] = sub(sin[u], rad);
-        dai[u] = sub(dai[u], rad);
+        tao[u] = sub(tao[u], rad);
         vice   = sub(vice,   rad);
         debt   = sub(debt,   rad);
     }
     function suck(address u, address v, uint rad) external note auth {
         sin[u] = add(sin[u], rad);
-        dai[v] = add(dai[v], rad);
+        tao[v] = add(tao[v], rad);
         vice   = add(vice,   rad);
         debt   = add(debt,   rad);
     }
@@ -262,7 +262,7 @@ contract Vat {
         Ilk storage ilk = ilks[i];
         ilk.rate = add(ilk.rate, rate);
         int rad  = mul(ilk.Art, rate);
-        dai[u]   = add(dai[u], rad);
+        tao[u]   = add(tao[u], rad);
         debt     = add(debt,   rad);
     }
 }
