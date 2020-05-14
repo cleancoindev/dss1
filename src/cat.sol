@@ -1,4 +1,4 @@
-/// cat.sol -- Dai liquidation module
+/// cat.sol -- Tao liquidation module
 
 // Copyright (C) 2018 Rain <rainbreak@riseup.net>
 //
