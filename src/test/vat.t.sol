@@ -7,7 +7,7 @@ import {Vat} from '../vat.sol';
 import {Cat} from '../cat.sol';
 import {Vow} from '../vow.sol';
 import {Jug} from '../jug.sol';
-import {GemJoin, ETHJoin, DaiJoin} from '../join.sol';
+import {GemJoin, ETHJoin, TaoJoin} from '../join.sol';
 
 import {Flipper} from './flip.t.sol';
 import {Flopper} from './flop.t.sol';
@@ -21,11 +21,11 @@ contract Hevm {
 contract TestVat is Vat {
     uint256 constant ONE = 10 ** 27;
     function mint(address usr, uint wad) public {
-        dai[usr] += wad * ONE;
+        tao[usr] += wad * ONE;
         debt += wad * ONE;
     }
     function balanceOf(address usr) public view returns (uint) {
-        return dai[usr] / ONE;
+        return tao[usr] / ONE;
     }
 }
 
@@ -38,7 +38,7 @@ contract TestVow is Vow {
     }
     // Total surplus
     function Joy() public view returns (uint) {
-        return vat.dai(address(this));
+        return vat.tao(address(this));
     }
     // Unqueued, pre-auction debt
     function Woe() public view returns (uint) {
@@ -278,7 +278,7 @@ contract FrobTest is DSTest {
         assertTrue( ali.can_frob("gold", a, a, a,  0 ether, -1 ether));
         assertTrue( bob.can_frob("gold", a, b, b,  0 ether, -1 ether));
         assertTrue( che.can_frob("gold", a, c, c,  0 ether, -1 ether));
-        // but only with their own dai
+        // but only with their own tao
         assertTrue(!ali.can_frob("gold", a, a, b,  0 ether, -1 ether));
         assertTrue(!bob.can_frob("gold", a, b, c,  0 ether, -1 ether));
         assertTrue(!che.can_frob("gold", a, c, a,  0 ether, -1 ether));
@@ -327,8 +327,8 @@ contract JoinTest is DSTest {
     DSToken gem;
     GemJoin gemA;
     ETHJoin ethA;
-    DaiJoin daiA;
-    DSToken dai;
+    TaoJoin taoA;
+    DSToken tao;
     address me;
 
     function setUp() public {
@@ -342,10 +342,10 @@ contract JoinTest is DSTest {
         ethA = new ETHJoin(address(vat), "eth");
         vat.rely(address(ethA));
 
-        dai  = new DSToken("Dai");
-        daiA = new DaiJoin(address(vat), address(dai));
-        vat.rely(address(daiA));
-        dai.setOwner(address(daiA));
+        tao  = new DSToken("Tao");
+        taoA = new TaoJoin(address(vat), address(tao));
+        vat.rely(address(taoA));
+        tao.setOwner(address(taoA));
 
         me = address(this);
     }
@@ -361,9 +361,9 @@ contract JoinTest is DSTest {
         string memory sig = "join(address)";
         (ok,) = address(ethA).call.value(msg.value)(abi.encodeWithSignature(sig, usr));
     }
-    function try_exit_dai(address usr, uint wad) public returns (bool ok) {
+    function try_exit_tao(address usr, uint wad) public returns (bool ok) {
         string memory sig = "exit(address,uint256)";
-        (ok,) = address(daiA).call(abi.encodeWithSignature(sig, usr, wad));
+        (ok,) = address(taoA).call(abi.encodeWithSignature(sig, usr, wad));
     }
     function () external payable {}
     function test_gem_join() public {
@@ -391,27 +391,27 @@ contract JoinTest is DSTest {
     function rad(uint wad) internal pure returns (uint) {
         return wad * 10 ** 27;
     }
-    function test_dai_exit() public {
+    function test_tao_exit() public {
         address urn = address(this);
         vat.mint(address(this), 100 ether);
-        vat.hope(address(daiA));
-        assertTrue( try_exit_dai(urn, 40 ether));
-        assertEq(dai.balanceOf(address(this)), 40 ether);
-        assertEq(vat.dai(me),              rad(60 ether));
-        assertTrue( try_cage(address(daiA)));
-        assertTrue(!try_exit_dai(urn, 40 ether));
-        assertEq(dai.balanceOf(address(this)), 40 ether);
-        assertEq(vat.dai(me),              rad(60 ether));
+        vat.hope(address(taoA));
+        assertTrue( try_exit_tao(urn, 40 ether));
+        assertEq(tao.balanceOf(address(this)), 40 ether);
+        assertEq(vat.tao(me),              rad(60 ether));
+        assertTrue( try_cage(address(taoA)));
+        assertTrue(!try_exit_tao(urn, 40 ether));
+        assertEq(tao.balanceOf(address(this)), 40 ether);
+        assertEq(vat.tao(me),              rad(60 ether));
     }
-    function test_dai_exit_join() public {
+    function test_tao_exit_join() public {
         address urn = address(this);
         vat.mint(address(this), 100 ether);
-        vat.hope(address(daiA));
-        daiA.exit(urn, 60 ether);
-        dai.approve(address(daiA), uint(-1));
-        daiA.join(urn, 30 ether);
-        assertEq(dai.balanceOf(address(this)),     30 ether);
-        assertEq(vat.dai(me),                  rad(70 ether));
+        vat.hope(address(taoA));
+        taoA.exit(urn, 60 ether);
+        tao.approve(address(taoA), uint(-1));
+        taoA.join(urn, 30 ether);
+        assertEq(tao.balanceOf(address(this)),     30 ether);
+        assertEq(vat.tao(me),                  rad(70 ether));
     }
     function test_fallback_reverts() public {
         (bool ok,) = address(ethA).call("invalid calldata");
@@ -426,8 +426,8 @@ contract JoinTest is DSTest {
         assertTrue(!try_cage(address(gemA)));
         ethA.deny(address(this));
         assertTrue(!try_cage(address(ethA)));
-        daiA.deny(address(this));
-        assertTrue(!try_cage(address(daiA)));
+        taoA.deny(address(this));
+        assertTrue(!try_cage(address(taoA)));
     }
 }
 
@@ -622,7 +622,7 @@ contract BiteTest is DSTest {
 
         assertEq(vat.balanceOf(address(this)),   0 ether);
         assertEq(gem("gold", address(this)),   960 ether);
-        vat.mint(address(this), 100 ether);  // magic up some dai for bidding
+        vat.mint(address(this), 100 ether);  // magic up some tao for bidding
         flip.dent(auction, 38 ether,  rad(100 ether));
         assertEq(vat.balanceOf(address(this)), 100 ether);
         assertEq(gem("gold", address(this)),   962 ether);
@@ -716,13 +716,13 @@ contract FoldTest is DSTest {
         vat.file("Line", rad(100 ether));
         vat.file("gold", "line", rad(100 ether));
     }
-    function draw(bytes32 ilk, uint dai) internal {
-        vat.file("Line", rad(dai));
-        vat.file(ilk, "line", rad(dai));
+    function draw(bytes32 ilk, uint tao) internal {
+        vat.file("Line", rad(tao));
+        vat.file(ilk, "line", rad(tao));
         vat.file(ilk, "spot", 10 ** 27 * 10000 ether);
         address self = address(this);
         vat.slip(ilk, self,  10 ** 27 * 1 ether);
-        vat.frob(ilk, self, self, self, int(1 ether), int(dai));
+        vat.frob(ilk, self, self, self, int(1 ether), int(tao));
     }
     function test_fold() public {
         address self = address(this);
@@ -732,6 +732,6 @@ contract FoldTest is DSTest {
         assertEq(tab("gold", self), rad(1.00 ether));
         vat.fold("gold", ali,   int(ray(0.05 ether)));
         assertEq(tab("gold", self), rad(1.05 ether));
-        assertEq(vat.dai(ali),      rad(0.05 ether));
+        assertEq(vat.tao(ali),      rad(0.05 ether));
     }
 }
