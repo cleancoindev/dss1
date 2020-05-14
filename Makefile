@@ -10,7 +10,7 @@ clean:
 
 build: clean
 	mkdir -p out/
-	solc --overwrite ${remappings} ${opts} /=/ ${files} > out/dss.json
+	solc --overwrite ${remappings} ${opts} /=/ ${files} > out/tss.json
 
 test: build
-	hevm dapp-test --json-file out/dss.json
+	hevm dapp-test --json-file out/tss.json
