@@ -25,13 +25,13 @@ contract VatLike {
 }
 
 /*
-   This thing lets you flip some gems for a given amount of dai.
-   Once the given amount of dai is raised, gems are forgone instead.
+   This thing lets you flip some gems for a given amount of tao.
+   Once the given amount of tao is raised, gems are forgone instead.
 
  - `lot` gems for sale
- - `tab` total dai wanted
- - `bid` dai paid
- - `gal` receives dai income
+ - `tab` total tao wanted
+ - `bid` tao paid
+ - `gal` receives tao income
  - `usr` receives gem forgone
  - `ttl` single bid lifetime
  - `beg` minimum bid increase
