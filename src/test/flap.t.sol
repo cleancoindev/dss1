@@ -77,20 +77,20 @@ contract FlapTest is DSTest {
         gem.push(bob, 200 ether);
     }
     function test_kick() public {
-        assertEq(vat.dai(address(this)), 1000 ether);
-        assertEq(vat.dai(address(flap)),    0 ether);
+        assertEq(vat.tao(address(this)), 1000 ether);
+        assertEq(vat.tao(address(flap)),    0 ether);
         flap.kick({ lot: 100 ether
                   , bid: 0
                   });
-        assertEq(vat.dai(address(this)),  900 ether);
-        assertEq(vat.dai(address(flap)),  100 ether);
+        assertEq(vat.tao(address(this)),  900 ether);
+        assertEq(vat.tao(address(flap)),  100 ether);
     }
     function test_tend() public {
         uint id = flap.kick({ lot: 100 ether
                             , bid: 0
                             });
         // lot taken from creator
-        assertEq(vat.dai(address(this)), 900 ether);
+        assertEq(vat.tao(address(this)), 900 ether);
 
         Guy(ali).tend(id, 100 ether, 1 ether);
         // bid taken from bidder
@@ -109,8 +109,8 @@ contract FlapTest is DSTest {
         hevm.warp(now + 5 weeks);
         Guy(bob).deal(id);
         // high bidder gets the lot
-        assertEq(vat.dai(address(flap)),  0 ether);
-        assertEq(vat.dai(bob), 100 ether);
+        assertEq(vat.tao(address(flap)),  0 ether);
+        assertEq(vat.tao(bob), 100 ether);
         // income is burned
         assertEq(gem.balanceOf(address(flap)),   0 ether);
     }
