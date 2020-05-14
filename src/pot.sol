@@ -20,20 +20,20 @@ pragma solidity ^0.5.12;
 import "./lib.sol";
 
 /*
-   "Savings Dai" is obtained when Dai is deposited into
-   this contract. Each "Savings Dai" accrues Dai interest
-   at the "Dai Savings Rate".
+   "Savings Tao" is obtained when Tao is deposited into
+   this contract. Each "Savings Tao" accrues Tao interest
+   at the "Tao Savings Rate".
 
    This contract does not implement a user tradeable token
    and is intended to be used with adapters.
 
-         --- `save` your `dai` in the `pot` ---
+         --- `save` your `tao` in the `pot` ---
 
-   - `dsr`: the Dai Savings Rate
-   - `pie`: user balance of Savings Dai
+   - `dsr`: the Tao Savings Rate
+   - `pie`: user balance of Savings Tao
 
-   - `join`: start saving some dai
-   - `exit`: remove some dai
+   - `join`: start saving some tao
+   - `exit`: remove some tao
    - `drip`: perform rate collection
 
 */
@@ -54,10 +54,10 @@ contract Pot is LibNote {
     }
 
     // --- Data ---
-    mapping (address => uint256) public pie;  // user Savings Dai
+    mapping (address => uint256) public pie;  // user Savings DTao
 
-    uint256 public Pie;  // total Savings Dai
-    uint256 public dsr;  // the Dai Savings Rate
+    uint256 public Pie;  // total Savings Tao
+    uint256 public dsr;  // the Tao Savings Rate
     uint256 public chi;  // the Rate Accumulator
 
     VatLike public vat;  // CDP engine
@@ -146,7 +146,7 @@ contract Pot is LibNote {
         vat.suck(address(vow), address(this), mul(Pie, chi_));
     }
 
-    // --- Savings Dai Management ---
+    // --- Savings Tao Management ---
     function join(uint wad) external note {
         require(now == rho, "Pot/rho-not-updated");
         pie[msg.sender] = add(pie[msg.sender], wad);
